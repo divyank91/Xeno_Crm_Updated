@@ -7,17 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(express.json());
 
-// Fix MIME types for JavaScript modules
-app.use(express.static(path.join(__dirname, '../client'), {
-  setHeaders: (res, path) => {
-    if (path.endsWith('.js') || path.endsWith('.mjs')) {
-      res.setHeader('Content-Type', 'application/javascript');
-    }
-    if (path.endsWith('.ts') || path.endsWith('.tsx')) {
-      res.setHeader('Content-Type', 'application/javascript');
-    }
-  }
-}));
+// Serve built static files
+app.use(express.static(path.join(__dirname, '../dist/public')));
 
 // API routes
 await registerRoutes(app);
@@ -27,7 +18,7 @@ app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'API endpoint not found' });
   }
-  res.sendFile(path.join(__dirname, '../client/index.html'));
+  res.sendFile(path.join(__dirname, '../dist/public/index.html'));
 });
 
 const port = Number(process.env.PORT) || 5000;
